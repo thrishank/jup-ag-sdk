@@ -2,10 +2,10 @@
 name = "jup-ag-sdk"
 version = "0.1.1"
 edition = "2024"
+license-file = "LICENSE"
+readme = "README.md"
 description = "A Rust SDK for Jupiter exchange APIs."
 authors = ["thrishank <thrishankkalluru@gmail.com"]
-license = "MIT"
-readme = "README.md"
 keywords = ["rust", "sdk", "jupiter", "exchange", "api"]
 exclude = ["/target/*", "/examples/*", "/tests/*"]
 

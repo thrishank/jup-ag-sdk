@@ -2,11 +2,20 @@
 
 A Rust SDK for interacting with Jupiter Exchange APIs.
 
-## Installation
+## Installation 🛠️
 
 ```bash
 cargo add jup-ag-sdk
 ```
+
+or Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+jup-ag-sdk = "0.1.1"
+```
+
+## Usage 💡
 
 ```rust
 use jup_ag_sdk::{
@@ -30,7 +39,7 @@ async fn main() {
 
     // get the quote
     let quote_res = client.get_quote(quote).await.expect("failed to get quote");
-    println!("quore response: {:?}", quote_res)
+    println!("quore response: {:?}", quote_res);
 
     // construct the swap request
     let payload = SwapRequest::new("thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m", quote_res);
@@ -44,3 +53,13 @@ async fn main() {
     println!("{:?}", swap);
 }
 ```
+
+## Local
+
+```bash
+git clone https://github.com/thrishank/jup-ag-sdk
+cd jup-ag-sdk
+cargo build
+```
+
+## MIT License
