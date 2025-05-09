@@ -1,17 +1,17 @@
 use reqwest::Client;
 use std::collections::HashMap;
-use types::{QuoteRequest, QuoteResponse, SwapRequest, SwapResponse};
+use types::{QuoteRequest, QuoteResponse, SwapInstructions, SwapRequest, SwapResponse};
 pub mod types;
 
-/// `JupiterQuoteApi` is a client wrapper to interact with the Jupiter Aggregator APIs.
+/// `JupiterClient` is a client wrapper to interact with the Jupiter Aggregator APIs.
 /// It is your gateway to interact with the Jupiter exchange API
-pub struct JupiterQuoteApi {
+pub struct JupiterClient {
     client: Client,
     base_url: String,
 }
 
-impl JupiterQuoteApi {
-    /// Creates a new instance of `JupiterQuoteApi`.
+impl JupiterClient {
+    /// Creates a new instance of `JupiterClient`.
     ///
     /// # Arguments
     ///
@@ -20,11 +20,11 @@ impl JupiterQuoteApi {
     /// # Example
     ///
     /// ```
-    /// let api = JupiterQuoteApi::new("https://lite-api.jup.ag/swap/v1");
+    /// let api = JupiterClient::new("https://lite-api.jup.ag/swap/v1");
     /// ```
     pub fn new(base_url: &str) -> Self {
         let client = Client::new();
-        JupiterQuoteApi {
+        JupiterClient {
             client,
             base_url: base_url.to_string(),
         }
@@ -184,6 +184,53 @@ impl JupiterQuoteApi {
 
         match response.json::<SwapResponse>().await {
             Ok(swap_response) => Ok(swap_response),
+            Err(e) => Err(format!("Failed to parse JSON response: {}", e).into()),
+        }
+    }
+
+    /// Fetches a swap transaction from Jupiter's `/swap` endpoint.
+    ///
+    /// # Arguments
+    /// * `data` - The [`SwapRequest`]payload.
+    ///
+    /// # Returns
+    /// A `Result` containing the `SwapInstructions`or an error.
+    ///
+    /// # Example
+    /// ```
+    /// let payload = SwapRequest::new("YourPubKey...", quote);
+    /// let swap_instructions = api.get_swap_instructions(payload).await?;
+    /// ```
+    pub async fn get_swap_instructions(
+        &self,
+        data: SwapRequest,
+    ) -> Result<SwapInstructions, Box<dyn std::error::Error>> {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse()?);
+
+        let response = match self
+            .client
+            .post(format!("{}/swap-instructions", self.base_url))
+            .headers(headers)
+            .json(&data)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(format!("Error fetching swap instructions: {}", e).into()),
+        };
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unable to get error details".to_string());
+            return Err(format!("API returned error status: {} - {}", status, error_text).into());
+        }
+
+        match response.json::<SwapInstructions>().await {
+            Ok(swap_instructions) => Ok(swap_instructions),
             Err(e) => Err(format!("Failed to parse JSON response: {}", e).into()),
         }
     }

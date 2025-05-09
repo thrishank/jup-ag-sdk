@@ -255,3 +255,30 @@ impl SwapRequest {
         self
     }
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountMeta {
+    pub pubkey: String,
+    pub is_signer: bool,
+    pub is_writable: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Instruction {
+    pub program_id: String,
+    pub accounts: Vec<AccountMeta>,
+    pub data: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SwapInstructions {
+    pub other_instructions: Option<Vec<Instruction>>,
+    pub compute_budget_instructions: Option<Vec<Instruction>>,
+    pub setup_instructions: Vec<Instruction>,
+    pub swap_instruction: Instruction,
+    pub cleanup_instruction: Option<Instruction>,
+    pub address_lookup_table_addresses: Vec<String>,
+}
