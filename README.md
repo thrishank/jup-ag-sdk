@@ -12,7 +12,7 @@ or Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-jup-ag-sdk = "0.1.2"
+jup-ag-sdk = "0.1.3"
 ```
 
 ## Usage 💡
@@ -45,12 +45,12 @@ async fn main() {
     let payload = SwapRequest::new("thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m", quote_res);
 
     // get the swap transaction
-    let swap = client
+    let tx = client
         .get_swap_transaction(payload)
         .await
         .expect("failed to get swap transaction");
 
-    println!("{:?}", swap);
+    println!("{:?}", tx);
 }
 ```
 
