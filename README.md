@@ -12,21 +12,21 @@ or Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-jup-ag-sdk = "0.1.1"
+jup-ag-sdk = "0.1.2"
 ```
 
 ## Usage 💡
 
 ```rust
 use jup_ag_sdk::{
-    JupiterQuoteApi,
+    JupiterClient,
     types::{QuoteRequest, SwapRequest},
 };
 
 #[tokio::main]
 async fn main() {
     // Initialize the client
-    let client = JupiterQuoteApi::new("https://lite-api.jup.ag/swap/v1");
+    let client = JupiterClient::new("https://lite-api.jup.ag/swap/v1");
 
     // construct the quote request
     let quote = QuoteRequest::new(
