@@ -3,13 +3,11 @@ name = "jup-ag-sdk"
 version = "0.1.0"
 edition = "2024"
 description = "A Rust SDK for Jupiter exchange APIs."
-authors = ["thrishank <thris.dev@proton.me"]
+authors = ["thrishank <thrishankkalluru@gmail.com"]
 license = "MIT"
 readme = "README.md"
 keywords = ["rust", "sdk", "jupiter", "exchange", "api"]
-categories = ["cryptocurrency", "blockchain", "web3"]
 exclude = ["/target/*", "/examples/*", "/tests/*"]
-
 
 [dependencies]
 tokio = { version = "1.45.0", features = ["full"] }

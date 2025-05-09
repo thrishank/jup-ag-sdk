@@ -3,12 +3,25 @@ use std::collections::HashMap;
 use types::{QuoteRequest, QuoteResponse, SwapRequest, SwapResponse};
 pub mod types;
 
+/// `JupiterQuoteApi` is a client wrapper to interact with the Jupiter Aggregator APIs.
+/// It is your gateway to interact with the Jupiter exchange API
 pub struct JupiterQuoteApi {
     client: Client,
     base_url: String,
 }
 
 impl JupiterQuoteApi {
+    /// Creates a new instance of `JupiterQuoteApi`.
+    ///
+    /// # Arguments
+    ///
+    /// * `base_url` - Base URL for the Jupiter API, typically `https://lite-api.jup.ag/swap/v1`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let api = JupiterQuoteApi::new("https://lite-api.jup.ag/swap/v1");
+    /// ```
     pub fn new(base_url: &str) -> Self {
         let client = Client::new();
         JupiterQuoteApi {
@@ -17,6 +30,30 @@ impl JupiterQuoteApi {
         }
     }
 
+    /// Fetches a token swap quote from Jupiter based on the provided parameters.
+    ///
+    /// # Arguments
+    ///
+    /// * `params` - A [`QuoteRequest`] containing query parameters like mint addresses, amount, slippage, and more.
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(QuoteResponse)` on success.
+    /// * `Err` with error details if the request or deserialization fails.
+    ///
+    /// # Jupiter API Reference
+    ///
+    /// - [Quote Endpoint](https://dev.jup.ag/docs/api/swap-api/quote)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let inputMint = "So11111111111111111111111111111111111111112";
+    /// let outputMint = "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN";
+    /// let amount = 1_000_000_000; // 1 SOL
+    /// let req = QuoteRequest::new(inputMint, outputMint, amount);
+    /// let quote = api.get_quote(req).await?;
+    /// ```
     pub async fn get_quote(
         &self,
         params: QuoteRequest,
@@ -72,23 +109,50 @@ impl JupiterQuoteApi {
             query_params.insert("maxAccounts", max_accounts.to_string());
         }
 
-        if let Some(slippage) = params.dyanmic_slippage {
+        if let Some(slippage) = params.dynamic_slippage {
             query_params.insert("autoSlippage", slippage.to_string());
         }
 
-        let response = self
+        let response = match self
             .client
             .get(format!("{}/quote", &self.base_url))
             .headers(headers)
             .query(&query_params)
             .send()
-            .await?
-            .json::<QuoteResponse>()
-            .await?;
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(format!("Error fetching quote: {}", e).into()),
+        };
 
-        Ok(response)
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unable to get error details".to_string());
+            return Err(format!("API returned error status: {} - {}", status, error_text).into());
+        }
+
+        match response.json::<QuoteResponse>().await {
+            Ok(quote_response) => Ok(quote_response),
+            Err(e) => Err(format!("Failed to parse JSON response: {}", e).into()),
+        }
     }
 
+    /// Fetches a swap transaction from Jupiter's `/swap` endpoint.
+    ///
+    /// # Arguments
+    /// * `data` - The [`SwapRequest`]payload.
+    ///
+    /// # Returns
+    /// A `Result` containing the `SwapResponse` with the  base64-encoded unsigned transaction or an error.
+    ///
+    /// # Example
+    /// ```
+    /// let payload = SwapRequest::new("YourPubKey...", quote);
+    /// let swap_transaction = api.get_swap_transaction(payload).await?;
+    /// ```
     pub async fn get_swap_transaction(
         &self,
         data: SwapRequest,
@@ -97,17 +161,30 @@ impl JupiterQuoteApi {
         headers.insert("Content-Type", "application/json".parse()?);
         headers.insert("Accept", "application/json".parse()?);
 
-        // error is in how i am sending the body data
-        let response = self
+        let response = match self
             .client
             .post(format!("{}/swap", self.base_url))
             .headers(headers)
             .json(&data)
             .send()
-            .await?
-            .json::<SwapResponse>()
-            .await?;
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(format!("Error fetching swap transaction: {}", e).into()),
+        };
 
-        Ok(response)
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unable to get error details".to_string());
+            return Err(format!("API returned error status: {} - {}", status, error_text).into());
+        }
+
+        match response.json::<SwapResponse>().await {
+            Ok(swap_response) => Ok(swap_response),
+            Err(e) => Err(format!("Failed to parse JSON response: {}", e).into()),
+        }
     }
 }
