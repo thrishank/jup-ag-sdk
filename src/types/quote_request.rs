@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 
 /// A request struct for fetching a quote from Jupiter's `/quote` endpoint.
 ///
@@ -42,11 +42,13 @@ pub struct QuoteRequest {
     /// A list of DEXes to exclusively include in routing.
     ///
     /// Example: `["Orca", "Meteora+DLMM"]`
+    #[serde(serialize_with = "vec_to_comma_string")]
     pub dexes: Option<Vec<String>>,
 
     /// A list of DEXes to exclude from routing.
     ///
     /// Example: `["Raydium", "Lifinity"]`
+    #[serde(serialize_with = "vec_to_comma_string")]
     pub exclude_dexes: Option<Vec<String>>,
 
     /// If true, restricts intermediate tokens to a stable set.
@@ -202,6 +204,7 @@ impl QuoteRequest {
     /// .dexes(vec!["Orca+V1".to_string(), "Meteora+DLMM".to_string()]);
     /// assert_eq!(request.dexes, Some(vec!["Orca+V1`".to_string(), "Meteora+DLMM".to_string()]));
     /// ```
+    /// [list of dexes](https://lite-api.jup.ag/swap/v1/program-id-to-label)
     pub fn dexes(mut self, dexes: Vec<String>) -> Self {
         self.dexes = Some(dexes);
         self
@@ -229,6 +232,7 @@ impl QuoteRequest {
     /// .exclude_dexes(vec!["Guacswap".to_string(), "Lifinity".to_string()]);
     /// assert_eq!(request.exclude_dexes, Some(vec!["Guacswap".to_string(), "Lifinity".to_string()]));
     /// ```
+    /// [list of dexes](https://lite-api.jup.ag/swap/v1/program-id-to-label)
     pub fn exclude_dexes(mut self, exclude_dexes: Vec<String>) -> Self {
         self.exclude_dexes = Some(exclude_dexes);
         self
@@ -393,5 +397,15 @@ impl QuoteRequest {
     pub fn dynamic_slippage(mut self, dynamic_slippage: bool) -> Self {
         self.dynamic_slippage = Some(dynamic_slippage);
         self
+    }
+}
+
+fn vec_to_comma_string<S>(vec: &Option<Vec<String>>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match vec {
+        Some(v) => serializer.serialize_str(&v.join(",")),
+        None => serializer.serialize_none(),
     }
 }
