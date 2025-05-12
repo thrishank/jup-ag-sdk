@@ -32,6 +32,7 @@ pub struct QuoteResponse {
     pub slippage_bps: i32,
 
     /// Platform fee info (if any was applied).
+    #[serde(default)]
     pub platform_fee: Option<PlatformFee>,
 
     /// Estimated price impact as a percentage string.
