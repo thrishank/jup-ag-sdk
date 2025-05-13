@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{QuoteGetSwapModeEnum, RoutePlanItem};
+use super::{PlatformFee, QuoteGetSwapModeEnum, RoutePlanItem};
 
 /// Request for a base64-encoded unsigned swap transaction to be used in POST
 ///
@@ -115,7 +115,8 @@ pub struct UltraOrderResponse {
     /// The detailed route plan (possibly multiple hops).
     pub route_plan: Vec<RoutePlanItem>,
 
-    pub fee_mint: String,
+    #[serde(default)]
+    pub fee_mint: Option<String>,
 
     pub fee_bps: u8,
 
@@ -123,19 +124,30 @@ pub struct UltraOrderResponse {
 
     pub swap_type: SwapType,
 
+    #[serde(default)]
     pub transaction: Option<String>,
 
-    pub gaseless: bool,
+    pub gasless: bool,
 
     pub request_id: String,
 
     pub total_time: u16,
 
+    #[serde(default)]
     pub taker: Option<String>,
 
+    #[serde(default)]
     pub quote_id: Option<String>,
 
+    #[serde(default)]
     pub maker: Option<String>,
+
+    /// Platform fee info (if any was applied).
+    #[serde(default)]
+    pub platform_fee: Option<PlatformFee>,
+
+    #[serde(default)]
+    pub expire_at: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
