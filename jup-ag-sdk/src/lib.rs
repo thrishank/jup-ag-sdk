@@ -1,5 +1,9 @@
 use reqwest::{Client, StatusCode};
-use types::{QuoteRequest, QuoteResponse, SwapInstructions, SwapRequest, SwapResponse};
+use serde_json::Value;
+use types::{
+    QuoteRequest, QuoteResponse, SwapInstructions, SwapRequest, SwapResponse, UltraOrderRequest,
+    UltraOrderResponse,
+};
 pub mod types;
 
 /// `JupiterClient` is a client wrapper to interact with the Jupiter Aggregator APIs.
@@ -19,7 +23,7 @@ impl JupiterClient {
     /// # Example
     ///
     /// ```
-    /// let api = JupiterClient::new("https://lite-api.jup.ag/swap/v1");
+    /// let api = JupiterClient::new("https://lite-api.jup.ag");
     /// ```
     pub fn new(base_url: &str) -> Self {
         let client = Client::new();
@@ -60,16 +64,9 @@ impl JupiterClient {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Accept", "application/json".parse()?);
 
-        let url = self
-            .client
-            .get(format!("{}/quote", &self.base_url))
-            .query(&params);
-
-        println!("URL: {:?}", url);
-
         let response = match self
             .client
-            .get(format!("{}/quote", &self.base_url))
+            .get(format!("{}/swap/v1/quote", &self.base_url))
             .headers(headers)
             .query(&params)
             .send()
@@ -117,7 +114,7 @@ impl JupiterClient {
 
         let response = match self
             .client
-            .post(format!("{}/swap", self.base_url))
+            .post(format!("{}/swap/v1/swap", self.base_url))
             .headers(headers)
             .json(&data)
             .send()
@@ -164,7 +161,7 @@ impl JupiterClient {
 
         let response = match self
             .client
-            .post(format!("{}/swap-instructions", self.base_url))
+            .post(format!("{}/swap/v1/swap-instructions", self.base_url))
             .headers(headers)
             .json(&data)
             .send()
@@ -185,6 +182,40 @@ impl JupiterClient {
 
         match response.json::<SwapInstructions>().await {
             Ok(swap_instructions) => Ok(swap_instructions),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    pub async fn get_ultra_order(
+        &self,
+        params: UltraOrderRequest,
+    ) -> Result<UltraOrderResponse, JupiterClientError> {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self
+            .client
+            .get(format!("{}/ultra/v1/order", self.base_url))
+            .headers(headers)
+            .query(&params)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unable to get error details".to_string());
+            return Err(JupiterClientError::ApiError(error_text, status));
+        }
+
+        match response.json::<UltraOrderResponse>().await {
+            Ok(ultra_order_response) => Ok(ultra_order_response),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }
