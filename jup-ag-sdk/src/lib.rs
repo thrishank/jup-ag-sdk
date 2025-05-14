@@ -1,9 +1,11 @@
-use reqwest::{Client, StatusCode};
-use serde_json::Value;
+use error::{JupiterClientError, handle_response};
+use reqwest::Client;
 use types::{
     QuoteRequest, QuoteResponse, SwapInstructions, SwapRequest, SwapResponse, UltraOrderRequest,
     UltraOrderResponse,
 };
+
+pub mod error;
 pub mod types;
 
 /// `JupiterClient` is a client wrapper to interact with the Jupiter Aggregator APIs.
@@ -76,14 +78,7 @@ impl JupiterClient {
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
 
-        if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response
-                .text()
-                .await
-                .unwrap_or_else(|_| "Unable to get error details".to_string());
-            return Err(JupiterClientError::ApiError(error_text, status));
-        }
+        let response = handle_response(response).await?;
 
         match response.json::<QuoteResponse>().await {
             Ok(quote_response) => Ok(quote_response),
@@ -124,14 +119,7 @@ impl JupiterClient {
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
 
-        if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response
-                .text()
-                .await
-                .unwrap_or_else(|_| "Unable to get error details".to_string());
-            return Err(JupiterClientError::ApiError(error_text, status));
-        }
+        let response = handle_response(response).await?;
 
         match response.json::<SwapResponse>().await {
             Ok(swap_response) => Ok(swap_response),
@@ -171,14 +159,7 @@ impl JupiterClient {
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
 
-        if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response
-                .text()
-                .await
-                .unwrap_or_else(|_| "Unable to get error details".to_string());
-            return Err(JupiterClientError::ApiError(error_text, status));
-        }
+        let response = handle_response(response).await?;
 
         match response.json::<SwapInstructions>().await {
             Ok(swap_instructions) => Ok(swap_instructions),
@@ -205,14 +186,7 @@ impl JupiterClient {
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
 
-        if !response.status().is_success() {
-            let status = response.status();
-            let error_text = response
-                .text()
-                .await
-                .unwrap_or_else(|_| "Unable to get error details".to_string());
-            return Err(JupiterClientError::ApiError(error_text, status));
-        }
+        let response = handle_response(response).await?;
 
         match response.json::<UltraOrderResponse>().await {
             Ok(ultra_order_response) => Ok(ultra_order_response),
@@ -220,21 +194,3 @@ impl JupiterClient {
         }
     }
 }
-
-#[derive(Debug, thiserror::Error)]
-pub enum JupiterClientError {
-    #[error("Request failed: {0}")]
-    RequestError(#[from] reqwest::Error),
-
-    #[error("Invalid header value: {0}")]
-    HeaderError(#[from] reqwest::header::InvalidHeaderValue),
-
-    #[error("API returned error: {0}, Status Code: {1}")]
-    ApiError(String, StatusCode),
-
-    #[error("Failed to deserialize response: {0}")]
-    DeserializationError(String),
-}
-
-// TODO
-//
