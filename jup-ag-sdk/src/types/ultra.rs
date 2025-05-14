@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use super::{PlatformFee, QuoteGetSwapModeEnum, RoutePlanItem};
@@ -223,3 +225,14 @@ pub struct SwapEvent {
     pub output_mint: Option<String>,
     pub output_amount: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TokenBalance {
+    pub amount: String,
+    pub ui_amount: f64,
+    pub slot: u64,
+    pub is_frozen: bool,
+}
+
+pub type TokenBalancesResponse = HashMap<String, TokenBalance>;
