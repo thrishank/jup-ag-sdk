@@ -157,3 +157,69 @@ pub enum SwapType {
     Rfq,
     Hashflow,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UltraExecuteRequest {
+    /// The signed transaction to execute
+    pub signed_transaction: String,
+
+    /// Found in response of /order
+    pub request_id: String,
+}
+
+impl UltraExecuteRequest {
+    pub fn new(signed_transaction: &str, request_id: &str) -> Self {
+        UltraExecuteRequest {
+            signed_transaction: signed_transaction.to_string(),
+            request_id: request_id.to_string(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UltraExecuteResponse {
+    pub status: Status,
+
+    #[serde(default)]
+    pub signature: Option<String>,
+
+    #[serde(default)]
+    pub slot: Option<String>,
+
+    #[serde(default)]
+    pub error: Option<String>,
+
+    pub code: String,
+
+    #[serde(default)]
+    pub total_input_amount: Option<String>,
+
+    #[serde(default)]
+    pub total_output_amount: Option<String>,
+
+    #[serde(default)]
+    pub input_amount_result: Option<String>,
+
+    #[serde(default)]
+    pub output_amount_result: Option<String>,
+
+    #[serde(default)]
+    pub swap_events: Option<Vec<SwapEvent>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Status {
+    Success,
+    Failed,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SwapEvent {
+    pub input_mint: Option<String>,
+    pub input_amount: Option<String>,
+    pub output_mint: Option<String>,
+    pub output_amount: Option<String>,
+}

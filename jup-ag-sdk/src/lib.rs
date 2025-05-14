@@ -1,8 +1,8 @@
 use error::{JupiterClientError, handle_response};
 use reqwest::Client;
 use types::{
-    QuoteRequest, QuoteResponse, SwapInstructions, SwapRequest, SwapResponse, UltraOrderRequest,
-    UltraOrderResponse,
+    QuoteRequest, QuoteResponse, SwapInstructions, SwapRequest, SwapResponse, UltraExecuteRequest,
+    UltraOrderRequest, UltraOrderResponse,
 };
 
 pub mod error;
@@ -190,6 +190,34 @@ impl JupiterClient {
 
         match response.json::<UltraOrderResponse>().await {
             Ok(ultra_order_response) => Ok(ultra_order_response),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    pub async fn ultra_excute_transaction(
+        &self,
+        data: UltraExecuteRequest,
+    ) -> Result<UltraOrderResponse, JupiterClientError> {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse()?);
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self
+            .client
+            .post(format!("{}/ultra/v1/execute", self.base_url))
+            .headers(headers)
+            .json(&data)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<UltraOrderResponse>().await {
+            Ok(swap_response) => Ok(swap_response),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }
