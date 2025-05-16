@@ -98,7 +98,7 @@ impl QuoteRequest {
     /// * `amount` - The amount to swap (raw, before decimals). Meaning depends on `swap_mode`.
     ///
     /// # Returns
-    /// A new `QuoteRequest` instance with default values for optional fields.
+    /// A new `QuoteRequest` instance with None value for optional fields.
     ///
     /// # Example
     /// ```
