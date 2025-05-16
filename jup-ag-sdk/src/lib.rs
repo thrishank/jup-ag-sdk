@@ -11,8 +11,8 @@ pub mod types;
 /// `JupiterClient` is a client wrapper to interact with the Jupiter Aggregator APIs.
 /// It is your gateway to interact with the Jupiter exchange API
 pub struct JupiterClient {
-    client: Client,
-    base_url: String,
+    pub client: Client,
+    pub base_url: String,
 }
 
 impl JupiterClient {
