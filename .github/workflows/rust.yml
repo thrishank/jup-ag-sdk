@@ -23,7 +23,7 @@ jobs:
         uses: Swatinem/rust-cache@v2 # Cache Rust dependencies to speed up builds
 
       - name: Run Tests
-        run: cd test; cargo test
+        run: cd tests; cargo test
 
   fmt:
     name: Rustfmt
