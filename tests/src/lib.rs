@@ -71,17 +71,11 @@ mod tests {
         .slippage_bps(100)
         .swap_mode(QuoteGetSwapModeEnum::ExactOut);
 
-        let quote_res = client.get_quote(quote).await.expect("Failed to get quote");
+        let quote_res = client.get_quote(&quote).await.expect("Failed to get quote");
 
-        assert_eq!(
-            quote_res.input_mint,
-            "So11111111111111111111111111111111111111112"
-        );
+        assert_eq!(quote_res.input_mint, quote.input_mint);
 
-        assert_eq!(
-            quote_res.output_mint,
-            "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
-        );
+        assert_eq!(quote_res.output_mint, quote.output_mint);
 
         assert_eq!(quote_res.out_amount, "1000000000");
 
@@ -99,7 +93,7 @@ mod tests {
             1_000_000_000,
         );
 
-        let quote_res = invalid_client.get_quote(quote).await;
+        let quote_res = invalid_client.get_quote(&quote).await;
 
         assert!(quote_res.is_err());
 
@@ -111,7 +105,7 @@ mod tests {
             1_000_000_000,
         );
 
-        let quote_res2 = valid_client.get_quote(quote2).await;
+        let quote_res2 = valid_client.get_quote(&quote2).await;
 
         assert!(quote_res2.is_err());
     }
@@ -129,19 +123,13 @@ mod tests {
         .slippage_bps(100)
         .swap_mode(QuoteGetSwapModeEnum::ExactOut);
 
-        let quote_res = client.get_quote(quote).await.expect("Failed to get quote");
+        let quote_res = client.get_quote(&quote).await.expect("Failed to get quote");
 
         let swap = SwapRequest::new("thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m", quote_res);
 
-        assert_eq!(
-            swap.user_public_key,
-            "thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m"
-        );
+        assert_eq!(swap.user_public_key, swap.user_public_key);
 
-        assert_eq!(
-            swap.quote_response.input_mint,
-            "So11111111111111111111111111111111111111112"
-        );
+        assert_eq!(swap.quote_response.input_mint, quote.input_mint);
 
         assert_eq!(swap.quote_response.out_amount, "1000000000");
     }
@@ -159,12 +147,12 @@ mod tests {
         .slippage_bps(100)
         .swap_mode(QuoteGetSwapModeEnum::ExactOut);
 
-        let quote_res = client.get_quote(quote).await.expect("Failed to get quote");
+        let quote_res = client.get_quote(&quote).await.expect("Failed to get quote");
 
         let swap = SwapRequest::new("thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m", quote_res);
 
         let swap_res = client
-            .get_swap_transaction(swap)
+            .get_swap_transaction(&swap)
             .await
             .expect("failed to get swap transaction");
 

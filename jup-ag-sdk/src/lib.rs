@@ -32,6 +32,7 @@ impl JupiterClient {
         JupiterClient {
             client,
             base_url: base_url.to_string(),
+            // TODO: Add Api key here
         }
     }
 
@@ -61,7 +62,7 @@ impl JupiterClient {
     /// ```
     pub async fn get_quote(
         &self,
-        params: QuoteRequest,
+        params: &QuoteRequest,
     ) -> Result<QuoteResponse, JupiterClientError> {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Accept", "application/json".parse()?);
@@ -101,7 +102,7 @@ impl JupiterClient {
     /// ```
     pub async fn get_swap_transaction(
         &self,
-        data: SwapRequest,
+        data: &SwapRequest,
     ) -> Result<SwapResponse, JupiterClientError> {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Content-Type", "application/json".parse()?);
@@ -142,7 +143,7 @@ impl JupiterClient {
     /// ```
     pub async fn get_swap_instructions(
         &self,
-        data: SwapRequest,
+        data: &SwapRequest,
     ) -> Result<SwapInstructions, JupiterClientError> {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Content-Type", "application/json".parse()?);
@@ -167,9 +168,10 @@ impl JupiterClient {
         }
     }
 
+    /// TODO: add docs and readme
     pub async fn get_ultra_order(
         &self,
-        params: UltraOrderRequest,
+        params: &UltraOrderRequest,
     ) -> Result<UltraOrderResponse, JupiterClientError> {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Accept", "application/json".parse()?);
@@ -196,7 +198,7 @@ impl JupiterClient {
 
     pub async fn ultra_excute_transaction(
         &self,
-        data: UltraExecuteRequest,
+        data: &UltraExecuteRequest,
     ) -> Result<UltraOrderResponse, JupiterClientError> {
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Content-Type", "application/json".parse()?);

@@ -21,11 +21,11 @@ async fn main() {
     )
     .swap_mode(QuoteGetSwapModeEnum::ExactOut); // Swap some SOL fro exact 1 USDC
 
-    let quote_res = client.get_quote(quote).await.expect("Failed to get quote");
+    let quote_res = client.get_quote(&quote).await.expect("Failed to get quote");
 
     let payload = SwapRequest::new("input_your_wallet_address", quote_res);
     let swap_res: SwapResponse = client
-        .get_swap_transaction(payload)
+        .get_swap_transaction(&payload)
         .await
         .expect("Failed to get swap transaction");
 
