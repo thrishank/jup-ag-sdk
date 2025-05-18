@@ -162,7 +162,7 @@ pub enum SwapType {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UltraExecuteRequest {
+pub struct UltraExecuteOrderRequest {
     /// The signed transaction to execute
     pub signed_transaction: String,
 
@@ -170,9 +170,9 @@ pub struct UltraExecuteRequest {
     pub request_id: String,
 }
 
-impl UltraExecuteRequest {
+impl UltraExecuteOrderRequest {
     pub fn new(signed_transaction: &str, request_id: &str) -> Self {
-        UltraExecuteRequest {
+        UltraExecuteOrderRequest {
             signed_transaction: signed_transaction.to_string(),
             request_id: request_id.to_string(),
         }
@@ -181,7 +181,7 @@ impl UltraExecuteRequest {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UltraExecuteResponse {
+pub struct UltraExecuteOrderResponse {
     pub status: Status,
 
     #[serde(default)]
@@ -236,3 +236,16 @@ pub struct TokenBalance {
 }
 
 pub type TokenBalancesResponse = HashMap<String, TokenBalance>;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Shield {
+    pub warnings: HashMap<String, Vec<Warning>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Warning {
+    #[serde(rename = "type")]
+    pub warning_type: String,
+    pub message: String,
+    pub severity: String,
+}
