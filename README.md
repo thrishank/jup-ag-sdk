@@ -29,11 +29,12 @@ use jup_ag_sdk::{
 use solana_sdk::{
     signature::{Keypair, Signer},
     transaction::VersionedTransaction,
-}
+};
+
 #[tokio::main]
 async fn main() {
     // Initialize the client
-    let client = JupiterClient::new("https://lite-api.jup.ag/ultra/v1");
+    let client = JupiterClient::new("https://lite-api.jup.ag");
 
     // Create an ultra order request
     let ultra = UltraOrderRequest::new(
@@ -45,7 +46,7 @@ async fn main() {
 
     // Fetch ultra order
     let ultra_res = client
-        .get_ultra_order(ultra)
+        .get_ultra_order(&ultra)
         .await
         .expect("Failed to get ultra order");
 
@@ -112,7 +113,7 @@ use bincode::deserialize;
 #[tokio::main]
 async fn main() {
     // Initialize the client
-    let client = JupiterClient::new("https://lite-api.jup.ag/swap/v1");
+    let client = JupiterClient::new("https://lite-api.jup.ag");
 
     // construct the quote request
     let quote = QuoteRequest::new(

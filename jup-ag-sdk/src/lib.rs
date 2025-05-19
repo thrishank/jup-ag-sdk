@@ -34,6 +34,7 @@ impl JupiterClient {
             client,
             base_url: base_url.to_string(),
             // TODO: Add Api key here
+            // make the base_url default
         }
     }
 
@@ -225,7 +226,7 @@ impl JupiterClient {
     ///
     /// # Returns
     ///
-    /// * `Ok(UltraOrderResponse)` on success.
+    /// * `Ok(UltraExecuteOrderResponse)` on success.
     /// * `Err` if the request or deserialization fails.
     ///
     /// # Jupiter API Reference
