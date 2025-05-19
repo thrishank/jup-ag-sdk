@@ -242,6 +242,11 @@ pub struct UltraExecuteOrderRequest {
 }
 
 impl UltraExecuteOrderRequest {
+    // function to construct a new UltraExecuteOrderRequest
+    //
+    // # Arguments
+    // * signed_transaction - The signed transaction to execute
+    // * request_id - The request ID from the order response
     pub fn new(signed_transaction: &str, request_id: &str) -> Self {
         UltraExecuteOrderRequest {
             signed_transaction: signed_transaction.to_string(),
