@@ -29,7 +29,7 @@ pub struct QuoteResponse {
     pub swap_mode: QuoteGetSwapModeEnum,
 
     /// The applied slippage in basis points.
-    pub slippage_bps: i32,
+    pub slippage_bps: u16,
 
     /// Platform fee info (if any was applied).
     #[serde(default)]
@@ -72,7 +72,7 @@ pub struct QuoteResponse {
 #[serde(rename_all = "camelCase")]
 pub struct PlatformFee {
     pub amount: String,
-    pub fee_bps: i32,
+    pub fee_bps: u16,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
