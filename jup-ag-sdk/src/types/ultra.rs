@@ -193,7 +193,7 @@ pub struct UltraExecuteOrderResponse {
     #[serde(default)]
     pub error: Option<String>,
 
-    pub code: String,
+    pub code: u32,
 
     #[serde(default)]
     pub total_input_amount: Option<String>,
