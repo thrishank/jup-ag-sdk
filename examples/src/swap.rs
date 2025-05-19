@@ -1,3 +1,5 @@
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use bincode::deserialize;
 use jup_ag_sdk::{
     JupiterClient,
@@ -28,6 +30,7 @@ pub async fn swap() {
         .await
         .expect("Failed to get swap transaction");
 
+    // TODO: .env private key, wirte code to have either b58 or bytes
     let key = ""; // signer private key
     let key_bytes = bs58::decode(key)
         .into_vec()
@@ -39,8 +42,9 @@ pub async fn swap() {
     let rpc_client =
         RpcClient::new_with_commitment(rpc_url.to_string(), CommitmentConfig::confirmed());
 
-    let swap_tx_bytes =
-        base64::decode(swap_res.swap_transaction).expect("Failed to decode base64 transaction");
+    let swap_tx_bytes = STANDARD
+        .decode(swap_res.swap_transaction)
+        .expect("Failed to decode base64 transaction");
     let mut tx: VersionedTransaction = deserialize(&swap_tx_bytes).unwrap();
     let message = tx.message.serialize();
     let signature = keypair.sign_message(&message);

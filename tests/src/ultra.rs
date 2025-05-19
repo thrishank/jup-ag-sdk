@@ -58,23 +58,33 @@ mod ultra_tests {
     async fn test_get_ultra_order_with_invalid_params() {
         let client = create_test_client();
 
-        let order =
-            UltraOrderRequest::new(SOL_MINT, JUP_MINT, 10000000000).add_taker(TEST_USER_PUBKEY);
+        let order = UltraOrderRequest::new(SOL_MINT, JUP_MINT, 10000).add_taker("invalid taker");
         // This account does not have that much SOL
 
         let res = client.get_ultra_order(&order).await;
         assert!(
             res.is_err(),
-            "Order with amount greater than present value should fail"
+            "Order with a invalid taker address value should fail"
         );
 
-        let order = UltraOrderRequest::new(SOL_MINT, "invalid mint", 10000000000)
-            .add_taker(TEST_USER_PUBKEY);
+        let order = UltraOrderRequest::new(SOL_MINT, "invalid mint", 10000000000);
         let res = client.get_ultra_order(&order).await;
         assert!(
             res.is_err(),
             "Order with a invalid mint address should fail"
         );
+
+        let order = UltraOrderRequest::new(SOL_MINT, JUP_MINT, 10000000000).exclude_routers(vec![
+            "metis".to_string(),
+            "jupiterz".to_string(),
+            "hashflow".to_string(),
+            "dflow".to_string(),
+            "pyth".to_string(),
+            "okx".to_string(),
+        ]);
+
+        let res = client.get_ultra_order(&order).await;
+        assert!(res.is_err(), "Order with all routers excluded should fail");
     }
 
     #[tokio::test]

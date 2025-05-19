@@ -42,6 +42,8 @@ pub struct QuoteRequest {
     /// A list of DEXes to exclusively include in routing.
     ///
     /// Example: `["Orca", "Meteora+DLMM"]`
+    /// TODO: add the list of dexes avaliable
+    /// refer: https://github.com/Jupiter-DevRel/jup-ag-sdk/blob/main/jup_ag_sdk/models/common/dex_enum.py
     #[serde(serialize_with = "vec_to_comma_string")]
     pub dexes: Option<Vec<String>>,
 
@@ -400,7 +402,7 @@ impl QuoteRequest {
     }
 }
 
-fn vec_to_comma_string<S>(vec: &Option<Vec<String>>, serializer: S) -> Result<S::Ok, S::Error>
+pub fn vec_to_comma_string<S>(vec: &Option<Vec<String>>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {

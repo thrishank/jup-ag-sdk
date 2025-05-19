@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
+use super::{PlatformFee, QuoteGetSwapModeEnum, RoutePlanItem, vec_to_comma_string};
 use serde::{Deserialize, Serialize};
-
-use super::{PlatformFee, QuoteGetSwapModeEnum, RoutePlanItem};
+use std::collections::HashMap;
 
 /// Request for a base64-encoded unsigned swap transaction to be used in POST
 ///
@@ -35,6 +33,12 @@ pub struct UltraOrderRequest {
     ///
     /// Possible values: >= 50 and <= 255
     pub referral_fee: Option<u8>,
+
+    /// A list of Routers to exclude from routing.
+    ///
+    /// Possible values: `[metis, jupiterz, hashflow, dflow, pyth, okx]`
+    #[serde(serialize_with = "vec_to_comma_string")]
+    pub exclude_routers: Option<Vec<String>>,
 }
 
 impl UltraOrderRequest {
@@ -50,7 +54,7 @@ impl UltraOrderRequest {
     ///
     /// # Example
     /// ```
-    /// let request = UltraOrder::new(
+    /// let request = UltraOrderRequest::new(
     ///     "So11111111111111111111111111111111111111112", // SOL
     ///     "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN", // JUP
     ///     1_000_000_000 // 1 SOL (9 decimals)
@@ -63,6 +67,7 @@ impl UltraOrderRequest {
             taker: None,
             referral_account: None,
             referral_fee: None,
+            exclude_routers: None,
         }
     }
 
@@ -73,7 +78,7 @@ impl UltraOrderRequest {
     ///
     /// # Example
     /// ```
-    /// let request = UltraOrder::new(
+    /// let request = UltraOrderRequest::new(
     ///     "So11111111111111111111111111111111111111112", // SOL
     ///     "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN", // JUP
     ///     1_000_000_000 // 1 SOL (9 decimals)
@@ -82,7 +87,73 @@ impl UltraOrderRequest {
         self.taker = Some(taker.to_string());
         self
     }
-    // TODO: Add the refreel methods in the struct
+
+    /// Add the referral account to the UltraOrder
+    ///
+    /// # Arguments
+    /// * `referral_account` - The referral account address
+    ///
+    /// # Returns
+    /// The updated UltraOrderRequest with referral account set
+    ///
+    /// # Example
+    /// ```
+    /// let request = UltraOrderRequest::new(
+    ///     "So11111111111111111111111111111111111111112", // SOL
+    ///     "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN", // JUP
+    ///     1_000_000_000 // 1 SOL (9 decimals)
+    /// ).add_referral_account("referral account address");
+    pub fn add_referral_account(mut self, referral_account: &str) -> Self {
+        self.referral_account = Some(referral_account.to_string());
+        self
+    }
+
+    /// Add the referral fee to the UltraOrder
+    ///
+    /// # Arguments
+    /// * `fee` - Referral fee in basis points (bps)
+    ///
+    /// # Returns
+    /// The updated UltraOrderRequest with referral fee set
+    ///
+    /// # Panics
+    /// Panics if fee is less than 50 or greater than 255
+    ///
+    /// # Example
+    /// ```
+    /// let request = UltraOrderRequest::new(
+    ///     "So11111111111111111111111111111111111111112", // SOL
+    ///     "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN", // JUP
+    ///     1_000_000_000 // 1 SOL (9 decimals)
+    /// ).add_referral_fee(100); // 1% fee (100 bps)
+    pub fn add_referral_fee(mut self, fee: u8) -> Self {
+        assert!(fee >= 50, "Referral fee must be between 50 and 255 bps");
+        self.referral_fee = Some(fee);
+        self
+    }
+
+    /// Sets the list of Routers to exclude from routing.
+    ///
+    ///
+    /// # Arguments
+    /// * `exclude_dexes` - A vector of DEX names to exclude (e.g., `[metis, jupiterz, hashflow, dflow, pyth, okx]`).
+    ///
+    /// # Returns
+    /// The modified `UltraOrderRequest` for chaining.
+    ///
+    /// # Example
+    /// ```
+    /// let request = UltraOrderRequest::new(
+    ///     "So11111111111111111111111111111111111111112",
+    ///     "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+    ///     1_000_000_000
+    /// )
+    /// .exclude_dexes(vec!["okx".to_string(), "pyth".to_string()]);
+    /// ```
+    pub fn exclude_routers(mut self, exclude_routers: Vec<String>) -> Self {
+        self.exclude_routers = Some(exclude_routers);
+        self
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

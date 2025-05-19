@@ -1,9 +1,9 @@
 [package]
 name = "jup-ag-sdk"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
-license-file = "LICENSE"
-readme = "README.md"
+license-file = "../LICENSE"
+readme = "../README.md"
 description = "A Rust SDK for Jupiter exchange APIs."
 authors = ["thrishank <thrishankkalluru@gmail.com"]
 keywords = ["rust", "sdk", "jupiter", "exchange", "api"]

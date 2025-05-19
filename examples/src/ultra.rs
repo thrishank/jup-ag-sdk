@@ -1,4 +1,4 @@
-use base64::{Engine, engine::general_purpose};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use bincode::{deserialize, serialize};
 use jup_ag_sdk::{
     JupiterClient,
@@ -28,7 +28,8 @@ pub async fn ultra() {
         .expect("Failed to get ultra order");
 
     // Decode base64 transaction
-    let swap_tx_bytes = base64::decode(ultra_res.transaction.expect("no transaction"))
+    let swap_tx_bytes = STANDARD
+        .decode(ultra_res.transaction.expect("no transaction"))
         .expect("Failed to decode base64 transaction");
 
     // Deserialize transaction and sign it
@@ -47,7 +48,7 @@ pub async fn ultra() {
 
     // Serialize and base64 encode the signed transaction
     let signed_tx_bytes = serialize(&tx).unwrap();
-    let base64_signed_tx = general_purpose::STANDARD.encode(&signed_tx_bytes);
+    let base64_signed_tx = STANDARD.encode(&signed_tx_bytes);
 
     // Create execute order request
     let execute = UltraExecuteOrderRequest {
