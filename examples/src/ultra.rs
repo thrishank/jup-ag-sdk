@@ -1,5 +1,6 @@
 use base64::{Engine, engine::general_purpose::STANDARD};
 use bincode::{deserialize, serialize};
+use dotenv::dotenv;
 use jup_ag_sdk::{
     JupiterClient,
     types::{UltraExecuteOrderRequest, UltraOrderRequest},
@@ -8,6 +9,7 @@ use solana_sdk::{
     signature::{Keypair, Signer},
     transaction::VersionedTransaction,
 };
+use std::env;
 
 pub async fn ultra() {
     // Initialize the client
@@ -36,7 +38,9 @@ pub async fn ultra() {
     let tx: VersionedTransaction = deserialize(&swap_tx_bytes).unwrap();
     let message = tx.message.serialize();
 
-    let key = "your private key";
+    dotenv().ok();
+
+    let key = env::var("PRIVATE_KEY").expect("PRIVATE_KEY not set in .env");
 
     let key_bytes = bs58::decode(key)
         .into_vec()

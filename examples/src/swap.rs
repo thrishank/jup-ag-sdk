@@ -1,6 +1,7 @@
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 use bincode::deserialize;
+use dotenv::dotenv;
 use jup_ag_sdk::{
     JupiterClient,
     types::{QuoteGetSwapModeEnum, QuoteRequest, SwapRequest, SwapResponse},
@@ -11,6 +12,7 @@ use solana_sdk::{
     signature::{Keypair, Signer},
     transaction::VersionedTransaction,
 };
+use std::env;
 
 pub async fn swap() {
     let client = JupiterClient::new("https://lite-api.jup.ag");
@@ -30,8 +32,12 @@ pub async fn swap() {
         .await
         .expect("Failed to get swap transaction");
 
-    // TODO: .env private key, wirte code to have either b58 or bytes
-    let key = ""; // signer private key
+    // Load .env variables into std::env
+    dotenv().ok();
+
+    // Read the variable
+    let key = env::var("PRIVATE_KEY").expect("PRIVATE_KEY not set in .env");
+
     let key_bytes = bs58::decode(key)
         .into_vec()
         .expect("Failed to decode base58 private key");

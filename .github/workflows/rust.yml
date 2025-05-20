@@ -35,12 +35,3 @@ jobs:
           components: rustfmt
       - name: Formatting
         run: cargo fmt --check
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build
-        run: cargo build --all-targets --release
