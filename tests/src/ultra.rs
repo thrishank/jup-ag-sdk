@@ -121,4 +121,17 @@ mod ultra_tests {
             "warning"
         );
     }
+
+    #[tokio::test]
+    async fn test_routers() {
+        let client = create_test_client();
+
+        let routers = client.routers().await.expect("Failed to get routers");
+        assert_eq!(routers.len(), 6, "There should be 6 routers");
+        let metis = routers
+            .iter()
+            .find(|r| r.id == "metis")
+            .expect("Metis router not found");
+        assert_eq!(metis.name, "Metis v1.6");
+    }
 }

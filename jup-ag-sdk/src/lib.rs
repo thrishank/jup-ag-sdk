@@ -16,6 +16,7 @@ pub struct JupiterClient {
     pub base_url: String,
 }
 
+// TODO: Refactor the code
 impl JupiterClient {
     /// Creates a new instance of `JupiterClient`.
     ///
