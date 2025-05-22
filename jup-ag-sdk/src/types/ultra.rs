@@ -325,3 +325,10 @@ pub struct Warning {
     pub message: String,
     pub severity: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Router {
+    pub id: String,
+    pub name: String,
+    pub icon: String,
+}

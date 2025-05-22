@@ -1,7 +1,7 @@
 use error::{JupiterClientError, handle_response};
 use reqwest::Client;
 use types::{
-    QuoteRequest, QuoteResponse, Shield, SwapInstructions, SwapRequest, SwapResponse,
+    QuoteRequest, QuoteResponse, Router, Shield, SwapInstructions, SwapRequest, SwapResponse,
     TokenBalancesResponse, UltraExecuteOrderRequest, UltraExecuteOrderResponse, UltraOrderRequest,
     UltraOrderResponse,
 };
@@ -366,5 +366,29 @@ impl JupiterClient {
             Ok(token_balances) => Ok(token_balances),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
+    }
+
+    /// Request for the list of routers available in the routing engine of Ultra, which is Juno
+    pub async fn routers(&self) -> Result<Vec<Router>, JupiterClientError> {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self
+            .client
+            .get(format!("{}/ultra/v1/order/routers", self.base_url))
+            .headers(headers)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        response
+            .json::<Vec<Router>>()
+            .await
+            .map_err(|e| JupiterClientError::DeserializationError(e.to_string()))
     }
 }
