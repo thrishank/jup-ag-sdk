@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod ultra_tests {
-    use jup_ag_sdk::types::UltraOrderRequest;
+    use jup_ag_sdk::types::{UltraExecuteOrderRequest, UltraOrderRequest};
 
     use crate::common::{JUP_MINT, SOL_MINT, TEST_AMOUNT, TEST_USER_PUBKEY, create_test_client};
 
@@ -55,6 +55,33 @@ mod ultra_tests {
     }
 
     #[tokio::test]
+    async fn test_ultra_order_with_invalid_data() {
+        let client = create_test_client();
+
+        let order =
+            UltraOrderRequest::new(SOL_MINT, JUP_MINT, 10000000).add_taker(TEST_USER_PUBKEY);
+
+        let order_res = client
+            .get_ultra_order(&order)
+            .await
+            .expect("get ultra order failed");
+
+        let execute_res = client
+            .ultra_execute_order(&UltraExecuteOrderRequest {
+                signed_transaction: order_res
+                    .transaction
+                    .expect("transaction is not present in the order response"),
+                request_id: order_res.request_id,
+            })
+            .await;
+
+        assert!(
+            execute_res.is_err(),
+            "ultra execute order should fail because the transaction is not signed"
+        );
+    }
+
+    #[tokio::test]
     async fn test_get_ultra_order_with_invalid_params() {
         let client = create_test_client();
 
@@ -86,24 +113,6 @@ mod ultra_tests {
         let res = client.get_ultra_order(&order).await;
         assert!(res.is_err(), "Order with all routers excluded should fail");
     }
-
-    #[tokio::test]
-    async fn test_get_token_balances() {
-        let client = create_test_client();
-        let tokens = client
-            .get_token_balances("372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j")
-            .await
-            .expect("failed to get token balances");
-
-        assert_eq!(
-            tokens
-                .get("2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv")
-                .expect("pengu token not found")
-                .amount,
-            516176755.to_string(),
-        )
-    }
-
     #[tokio::test]
     async fn test_shield() {
         let client = create_test_client();

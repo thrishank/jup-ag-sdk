@@ -2,8 +2,8 @@ use error::{JupiterClientError, handle_response};
 use reqwest::Client;
 use types::{
     QuoteRequest, QuoteResponse, Router, Shield, SwapInstructions, SwapRequest, SwapResponse,
-    TokenBalancesResponse, UltraExecuteOrderRequest, UltraExecuteOrderResponse, UltraOrderRequest,
-    UltraOrderResponse,
+    TokenBalancesResponse, TokenPriceRequest, TokenPriceResponse, UltraExecuteOrderRequest,
+    UltraExecuteOrderResponse, UltraOrderRequest, UltraOrderResponse,
 };
 
 pub mod error;
@@ -391,5 +391,33 @@ impl JupiterClient {
             .json::<Vec<Router>>()
             .await
             .map_err(|e| JupiterClientError::DeserializationError(e.to_string()))
+    }
+
+    /// Returns prices of specified tokens.
+    pub async fn get_token_price(
+        &self,
+        params: &TokenPriceRequest,
+    ) -> Result<TokenPriceResponse, JupiterClientError> {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self
+            .client
+            .get(format!("{}/price/v2", self.base_url))
+            .headers(headers)
+            .query(&params)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<TokenPriceResponse>().await {
+            Ok(token_price) => Ok(token_price),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
     }
 }
