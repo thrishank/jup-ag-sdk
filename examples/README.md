@@ -1,6 +1,6 @@
 # Examples for Jupiter Aggregator Rust SDK
 
-Practical examples demonstrating how to use the [Jupiter Aggregator Rust SDK](https://crates.io/crates/jup-ag-sdk) to perform token swaps on the Solana blockchain.
+Practical examples demonstrating how to use the [Jupiter Aggregator Rust SDK](https://crates.io/crates/jup-ag-sdk).
 
 ## Contents
 
@@ -28,9 +28,17 @@ This example demonstrates how to:
 
 > ✅ Ultra API is recommended for most use cases unless you need deep transaction customization.
 
+### 3. [`token.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/token.rs)
+
+This example demonstrates how to:
+
+- Fetch token balances for a given wallet address.
+- Query current token prices in USDC and in other tokens (e.g., SOL).
+- Check token warnings using Jupiter’s shield API
+
 ## Environment Setup
 
-Both examples require a .env file with your wallet’s private key:
+require a .env file with your wallet’s private key to sign the transactions
 
 ```bash
 cp .env.example .env

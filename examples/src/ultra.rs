@@ -35,7 +35,7 @@ pub async fn ultra() {
         .expect("Failed to decode base64 transaction");
 
     // Deserialize transaction and sign it
-    let tx: VersionedTransaction = deserialize(&swap_tx_bytes).unwrap();
+    let mut tx: VersionedTransaction = deserialize(&swap_tx_bytes).unwrap();
     let message = tx.message.serialize();
 
     dotenv().ok();
@@ -49,6 +49,7 @@ pub async fn ultra() {
     let keypair = Keypair::from_bytes(&key_bytes).expect("Failed to create Keypair");
 
     let signature = keypair.sign_message(&message);
+    tx.signatures.push(signature);
 
     // Serialize and base64 encode the signed transaction
     let signed_tx_bytes = serialize(&tx).unwrap();

@@ -42,7 +42,7 @@ async fn main() {
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
         1_000_000,
     )
-    .add_taker("thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m");
+    .add_taker("your input wallet address");
 
     // Fetch ultra order
     let ultra_res = client
@@ -60,7 +60,9 @@ async fn main() {
     let mut tx: VersionedTransaction = deserialize(&swap_tx_bytes).unwrap();
     let message = tx.message.serialize();
 
-    let key = "your private key";
+    dotenv().ok();
+
+    let key = env::var("PRIVATE_KEY").expect("PRIVATE_KEY not set in .env");
 
     let key_bytes = bs58::decode(key)
         .into_vec()
@@ -69,6 +71,7 @@ async fn main() {
     let keypair = Keypair::from_bytes(&key_bytes).expect("Failed to create Keypair");
 
     let signature = keypair.sign_message(&message);
+    tx.signatures.push(signature);
 
     // Serialize and base64 encode the signed transaction
     let signed_tx_bytes = serialize(&tx).unwrap();
@@ -129,7 +132,7 @@ async fn main() {
     println!("quore response: {:?}", quote_res);
 
     // construct the swap request
-    let payload = SwapRequest::new("thrbabBvANwvKdV34GdrFUDXB6YMsksdfmiKj2ZUV3m", quote_res);
+    let payload = SwapRequest::new("your input wallet address", quote_res);
 
     // get the swap transaction
     let swap_res = client
@@ -162,6 +165,8 @@ async fn main() {
         // Replace the first signature (fee payer)
         tx.signatures[0] = signature;
     };
+
+    tx.signatures.push(signature);
 
     let signature = rpc_client.send_and_confirm_transaction(&tx).unwrap();
 

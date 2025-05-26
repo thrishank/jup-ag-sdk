@@ -63,14 +63,7 @@ pub async fn swap() {
     let message = tx.message.serialize();
     let signature = keypair.sign_message(&message);
 
-    if tx.signatures.is_empty() {
-        // If no signatures array exists (unlikely with Jupiter)
-        tx.signatures.push(signature);
-    } else {
-        // Replace the first signature (fee payer)
-        tx.signatures[0] = signature;
-    };
-
+    tx.signatures.push(signature);
     let signature = rpc_client.send_and_confirm_transaction(&tx).unwrap();
 
     println!("Transaction signature: {}", signature);
@@ -85,6 +78,7 @@ pub async fn swap_with_instructions() {
 
     let client = JupiterClient::new("https://lite-api.jup.ag");
 
+    // get quote
     let quote = QuoteRequest::new(
         "So11111111111111111111111111111111111111112",
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -94,12 +88,15 @@ pub async fn swap_with_instructions() {
 
     let quote_res = client.get_quote(&quote).await.expect("Failed to get quote");
 
+    // get swap instructions
     let payload = SwapRequest::new("EXBdeRCdiNChKyD7akt64n9HgSXEpUtpPEhmbnm4L6iH", quote_res);
+
     let swap_instructions = client
         .get_swap_instructions(&payload)
         .await
         .expect("Failed to get swap instructions");
 
+    // convert the swap instructions to Solana instructions type
     let mut instructions = vec![];
 
     if let Some(compute_instructions) = swap_instructions.compute_budget_instructions {
@@ -124,6 +121,7 @@ pub async fn swap_with_instructions() {
         }
     }
 
+    // get address lookup tables
     let mut address_table_lookups = vec![];
     for alt_address in swap_instructions.address_lookup_table_addresses {
         let alt_pubkey = alt_address.parse::<Pubkey>().unwrap();
@@ -165,7 +163,7 @@ pub async fn swap_with_instructions() {
 
     let tx = VersionedTransaction::try_new(versioned_message, &[&keypair]).unwrap();
 
-    let signature = rpc_client.send_transaction(&tx).await.unwrap();
+    let signature = rpc_client.send_and_confirm_transaction(&tx).await.unwrap();
     println!("Tx sent with signature: {}", signature);
 }
 
