@@ -11,8 +11,9 @@ async fn main() {
     // ultra::ultra().await;
 
     // swap::swap().await; // swap tokens using Jupiter swap api
+    // swap::swap_with_instructions().await; // build the transaction with Jupiter swap instructions
 
     // token::token_balances().await; // get token balances using Jupiter token api
-    // token::token_price().await;
-    // token::token_info().await
+    // token::token_price().await; // get token price using Jupiter token api
+    // token::token_info().await // get token malicious info
 }

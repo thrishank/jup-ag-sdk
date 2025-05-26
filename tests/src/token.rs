@@ -24,7 +24,8 @@ mod token_tests {
     #[tokio::test]
     async fn test_get_token_prices() {
         let client = create_test_client();
-        let req = TokenPriceRequest::new(vec![SOL_MINT.to_string(), USDC_MINT.to_string()]);
+        let token_mints = vec![SOL_MINT.to_string(), USDC_MINT.to_string()];
+        let req = TokenPriceRequest::new(&token_mints);
 
         assert_eq!(req.token_mints.len(), 2, "mints should be 2");
         assert_eq!(req.token_mints[0], SOL_MINT);
@@ -47,8 +48,7 @@ mod token_tests {
             usdc_price
         );
 
-        let req = TokenPriceRequest::new(vec![SOL_MINT.to_string(), USDC_MINT.to_string()])
-            .with_vs_token(SOL_MINT);
+        let req = TokenPriceRequest::new(&token_mints).with_vs_token(SOL_MINT);
 
         let res = client
             .get_token_price(&req)
