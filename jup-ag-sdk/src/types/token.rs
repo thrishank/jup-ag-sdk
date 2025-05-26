@@ -18,9 +18,9 @@ pub struct TokenPriceRequest {
 }
 
 impl TokenPriceRequest {
-    pub fn new(token_mints: Vec<String>) -> Self {
+    pub fn new(token_mints: &[String]) -> Self {
         Self {
-            token_mints,
+            token_mints: token_mints.to_vec(),
             vs_token: None,
             show_extra_info: None,
         }

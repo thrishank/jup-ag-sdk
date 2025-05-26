@@ -340,7 +340,7 @@ impl JupiterClient {
     ///     "So11111111111111111111111111111111111111112".to_string(),
     ///     "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v".to_string(),
     /// ];
-    /// let shield_info = api.shield(&mints).await?;
+    /// let shield_info = client.shield(&mints).await?;
     /// println!("{:#?}", shield_info);
     /// ```
     pub async fn shield(&self, mints: &[String]) -> Result<Shield, JupiterClientError> {
@@ -394,6 +394,8 @@ impl JupiterClient {
     }
 
     /// Returns prices of specified tokens.
+    /// TODO: update the doc
+    /// sheild, token examples, swap instruction examples
     pub async fn get_token_price(
         &self,
         params: &TokenPriceRequest,

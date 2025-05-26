@@ -1,4 +1,5 @@
 mod swap;
+mod token;
 mod ultra;
 
 #[tokio::main]
@@ -7,7 +8,11 @@ async fn main() {
     // Ultra API is the spiritual successor to Swap API, and is much simpler to use than Swap API.
     // If you are first starting out on your Solana development journey, using Ultra API is highly recommended over Swap API.
     // https://dev.jup.ag/docs/ultra-api/
-    ultra::ultra().await;
+    // ultra::ultra().await;
 
-    swap::swap().await; // swap tokens using Jupiter swap api
+    // swap::swap().await; // swap tokens using Jupiter swap api
+
+    // token::token_balances().await; // get token balances using Jupiter token api
+    // token::token_price().await;
+    // token::token_info().await
 }
