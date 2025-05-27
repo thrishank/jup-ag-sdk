@@ -134,7 +134,7 @@ impl JupiterClient {
 
         let response = match self
             .client
-            .post(format!("{}/trigger/v1/cancelOrders", self.base_url))
+            .post(format!("{}/trigger/v1/getTriggerOrders", self.base_url))
             .headers(headers)
             .json(&data)
             .send()
@@ -147,7 +147,7 @@ impl JupiterClient {
         let response = handle_response(response).await?;
 
         match response.json::<serde_json::Value>().await {
-            Ok(cancel_order_response) => Ok(cancel_order_response),
+            Ok(orders) => Ok(orders),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }
