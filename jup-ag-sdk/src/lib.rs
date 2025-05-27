@@ -36,13 +36,3 @@ pub use error::JupiterClientError;
 pub mod client;
 pub mod error;
 pub mod types;
-
-pub mod prelude {
-    pub use crate::client::JupiterClient;
-    pub use crate::error::JupiterClientError;
-    pub use crate::types::{
-        QuoteRequest, QuoteResponse, Router, Shield, SwapInstructions, SwapRequest, SwapResponse,
-        TokenBalancesResponse, TokenPriceRequest, TokenPriceResponse, UltraExecuteOrderRequest,
-        UltraExecuteOrderResponse, UltraOrderRequest, UltraOrderResponse,
-    };
-}

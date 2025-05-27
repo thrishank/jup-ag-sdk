@@ -12,3 +12,6 @@ pub use ultra::*;
 
 pub mod token;
 pub use token::*;
+
+pub mod trigger;
+pub use trigger::*;

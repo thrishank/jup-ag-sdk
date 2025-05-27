@@ -7,7 +7,7 @@ pub struct TokenPriceRequest {
     /// Comma separate to pass in multiple
     /// Example: So11111111111111111111111111111111111111112,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
     #[serde(rename = "ids")]
-    #[serde(serialize_with = "vec_to_comma_string")]
+    #[serde(serialize_with = "to_comma_string")]
     pub token_mints: Vec<String>,
 
     /// By default, prices are denominated by USD. To denominate price in SOL, use vsToken with SOL mint address
@@ -61,7 +61,7 @@ pub struct TokenPriceResponse {
     pub time_taken: f64,
 }
 
-fn vec_to_comma_string<S>(vec: &[String], serializer: S) -> Result<S::Ok, S::Error>
+pub fn to_comma_string<S>(vec: &[String], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
