@@ -13,7 +13,7 @@ This example shows how to:
 - Broadcast the transaction via a custom RPC.
 - Use this if you want full control over the transaction
 
-> &#9888; Swap API gives flexibility but requires you to handle slippage, fees, broadcasting, and error parsing manually.
+> &#9888; Swap API gives flexibility but requires you to handle slippage, fees, transaction broadcasting, and error parsing manually.
 
 ### 2. [`ultra.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/ultra.rs)
 
@@ -48,7 +48,7 @@ cp .env.example .env
 PRIVATE_KEY=your_base58_private_key_here
 ```
 
-> &#9888; Do not commit your .env or private key to version control.
+> &#9888; Do not commit your .env or private key to git.
 
 ## Learn More
 

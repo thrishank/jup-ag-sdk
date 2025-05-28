@@ -3,7 +3,7 @@ use crate::{
     error::handle_response,
     types::{
         CancelTriggerOrder, CancelTriggerOrders, CreateTriggerOrder, ExecuteTriggerOrder,
-        GetTriggerOrders, TriggerResponse,
+        GetTriggerOrders, OrderResponse, TriggerResponse,
     },
 };
 
@@ -127,16 +127,15 @@ impl JupiterClient {
     pub async fn get_trigger_orders(
         &self,
         data: &GetTriggerOrders,
-    ) -> Result<serde_json::Value, JupiterClientError> {
+    ) -> Result<OrderResponse, JupiterClientError> {
         let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
         headers.insert("Accept", "application/json".parse()?);
 
         let response = match self
             .client
-            .post(format!("{}/trigger/v1/getTriggerOrders", self.base_url))
+            .get(format!("{}/trigger/v1/getTriggerOrders", self.base_url))
             .headers(headers)
-            .json(&data)
+            .query(&data)
             .send()
             .await
         {
@@ -146,7 +145,7 @@ impl JupiterClient {
 
         let response = handle_response(response).await?;
 
-        match response.json::<serde_json::Value>().await {
+        match response.json::<OrderResponse>().await {
             Ok(orders) => Ok(orders),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }

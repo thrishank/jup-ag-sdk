@@ -23,6 +23,7 @@ pub struct CreateTriggerOrder {
     /// fee payer address
     pub payer: String,
 
+    /// making and taking amount inputs
     pub params: Params,
 
     /// In microlamports, defaults to 95th percentile of priority fees
@@ -85,6 +86,7 @@ impl CreateTriggerOrder {
     }
 
     /// Sets the compute unit price in microlamports
+    /// Default value: auto
     pub fn compute_unit_price(mut self, price: &str) -> Self {
         self.compute_unit_price = Some(price.to_string());
         self
@@ -109,6 +111,7 @@ impl CreateTriggerOrder {
     }
 
     /// Sets the slippage in basis points
+    /// Default value: 0
     pub fn slippage_bps(mut self, slippage: &str) -> Self {
         self.params.slippage_bps = Some(slippage.to_string());
         self
@@ -157,7 +160,7 @@ impl Params {
 pub struct TriggerResponse {
     /// Required to make a request to /execute
     #[serde(default)]
-    pub request_id: String,
+    pub request_id: Option<String>,
 
     /// Unsigned base-64 encoded transaction
     #[serde(default)]
@@ -190,14 +193,14 @@ pub struct ExecuteTriggerOrder {
     pub request_id: String,
 
     /// The base-58 signed transaction to execute
-    pub transaction: String,
+    pub signed_transaction: String,
 }
 
 impl ExecuteTriggerOrder {
-    pub fn new(request_id: &str, transaction: &str) -> Self {
+    pub fn new(request_id: &str, signed_transaction: &str) -> Self {
         Self {
             request_id: request_id.to_string(),
-            transaction: transaction.to_string(),
+            signed_transaction: signed_transaction.to_string(),
         }
     }
 }
@@ -214,6 +217,16 @@ pub struct CancelTriggerOrder {
     /// Default value: auto
     #[serde(skip_serializing_if = "Option::is_none")]
     pub compute_unit_price: Option<String>,
+}
+
+impl CancelTriggerOrder {
+    pub fn new(maker: &str, order: &str) -> Self {
+        Self {
+            maker: maker.to_string(),
+            order: order.to_string(),
+            compute_unit_price: None,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -234,6 +247,7 @@ pub struct CancelTriggerOrders {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GetTriggerOrders {
+    /// user wallet address to retrive orders for
     pub user: String,
 
     /// Default value: 1
@@ -248,10 +262,69 @@ pub struct GetTriggerOrders {
     pub order_status: String,
 
     /// The input mint to filter by
-    pub input_mint: String,
+    pub input_mint: Option<String>,
 
     /// The output mint to filter by
-    pub output_mint: String,
+    pub output_mint: Option<String>,
 }
 
-// TODO: struct fot response manaul testing, unit tests, docs, examples
+/// orders associated to the provided user wallet address
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderResponse {
+    pub user: String,
+    pub order_status: String,
+    pub orders: Vec<Order>,
+    pub total_pages: u32,
+    pub page: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Order {
+    pub user_pubkey: String,
+    pub order_key: String,
+    pub input_mint: String,
+    pub output_mint: String,
+    pub making_amount: String,
+    pub taking_amount: String,
+    pub remaining_making_amount: String,
+    pub remaining_taking_amount: String,
+    pub raw_making_amount: String,
+    pub raw_taking_amount: String,
+    pub raw_remaining_making_amount: String,
+    pub raw_remaining_taking_amount: String,
+    pub slippage_bps: String,
+    #[serde(default)]
+    pub expired_at: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+    pub status: String,
+    pub open_tx: String,
+    pub close_tx: String,
+    pub program_version: String,
+    pub trades: Vec<Trade>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Trade {
+    pub order_key: String,
+    pub keeper: String,
+    pub input_mint: String,
+    pub output_mint: String,
+    pub input_amount: String,
+    pub output_amount: String,
+    pub raw_input_amount: String,
+    pub raw_output_amount: String,
+    pub fee_mint: String,
+    pub fee_amount: String,
+    pub raw_fee_amount: String,
+    pub tx_id: String,
+    pub confirmed_at: String,
+    pub action: String,
+    #[serde(default)]
+    pub product_meta: Option<serde_json::Value>, // Flexible for null or arbitrary JSON
+}
+
+// TODO: manaul testing pending is execute and cancel all, unit tests, docs, examples
