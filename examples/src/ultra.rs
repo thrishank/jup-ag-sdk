@@ -49,8 +49,14 @@ pub async fn ultra() {
     let keypair = Keypair::from_bytes(&key_bytes).expect("Failed to create Keypair");
 
     let signature = keypair.sign_message(&message);
-    tx.signatures.push(signature);
 
+    if tx.signatures.is_empty() {
+        // If no signatures array exists (unlikely with Jupiter)
+        tx.signatures.push(signature);
+    } else {
+        // Replace the first signature (fee payer)
+        tx.signatures[0] = signature;
+    };
     // Serialize and base64 encode the signed transaction
     let signed_tx_bytes = serialize(&tx).unwrap();
     let base64_signed_tx = STANDARD.encode(&signed_tx_bytes);

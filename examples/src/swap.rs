@@ -63,7 +63,14 @@ pub async fn swap() {
     let message = tx.message.serialize();
     let signature = keypair.sign_message(&message);
 
-    tx.signatures.push(signature);
+    if tx.signatures.is_empty() {
+        // If no signatures array exists (unlikely with Jupiter)
+        tx.signatures.push(signature);
+    } else {
+        // Replace the first signature (fee payer)
+        tx.signatures[0] = signature;
+    };
+
     let signature = rpc_client.send_and_confirm_transaction(&tx).unwrap();
 
     println!("Transaction signature: {}", signature);

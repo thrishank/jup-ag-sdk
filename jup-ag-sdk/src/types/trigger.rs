@@ -159,37 +159,21 @@ impl Params {
 #[serde(rename_all = "camelCase")]
 pub struct TriggerResponse {
     /// Required to make a request to /execute
-    #[serde(default)]
-    pub request_id: Option<String>,
+    pub request_id: String,
 
     /// Unsigned base-64 encoded transaction
-    #[serde(default)]
     pub transaction: String,
 
     /// Base-58 account which is the Trigger Order account
-    #[serde(default)]
-    pub order: Option<String>,
+    pub order: String,
 
     pub code: u8,
-
-    #[serde(default)]
-    pub error: Option<String>,
-
-    #[serde(default)]
-    pub cause: Option<String>,
-
-    /// Signature of the transaction, if generated
-    #[serde(default)]
-    pub signature: Option<String>,
-
-    #[serde(default)]
-    pub status: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecuteTriggerOrder {
-    /// The request ID from the trigger order creation response
+    /// The request ID  
     pub request_id: String,
 
     /// The base-58 signed transaction to execute
@@ -327,4 +311,4 @@ pub struct Trade {
     pub product_meta: Option<serde_json::Value>, // Flexible for null or arbitrary JSON
 }
 
-// TODO: manaul testing pending is execute and cancel all, unit tests, docs, examples
+// TODO:unit tests, examples
