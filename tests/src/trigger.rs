@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod ultra_tests {
-    use jup_ag_sdk::types::CreateTriggerOrder;
+    use jup_ag_sdk::types::{
+        CreateTriggerOrder, ExecuteTriggerOrder, GetTriggerOrders, OrderStatus,
+    };
 
     use crate::common::{SOL_MINT, TEST_USER_PUBKEY, USDC_MINT, create_test_client};
 
@@ -67,6 +69,46 @@ mod ultra_tests {
         assert!(
             !create_order.order.is_empty(),
             "signature should not be empty"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_execute_order_fail() {
+        let client = create_test_client();
+
+        let invalid_order = ExecuteTriggerOrder {
+            request_id: "".to_string(),
+            signed_transaction: "".to_string(),
+        };
+
+        let result = client.execute_trigger_order(&invalid_order).await;
+        assert!(result.is_err(), "Executing an invalid order should fail");
+    }
+
+    #[tokio::test]
+    async fn test_get_trigger_orders() {
+        let client = create_test_client();
+
+        let params = GetTriggerOrders::new(
+            "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j",
+            OrderStatus::History,
+        );
+
+        let data = client
+            .get_trigger_orders(&params)
+            .await
+            .expect("get trigger orders failed");
+
+        assert_eq!(data.user, "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j");
+
+        assert!(
+            data.orders.len() > 3,
+            "orders length should be greater than 3"
+        );
+
+        assert_eq!(
+            data.order_status, "history",
+            "order status should be history"
         );
     }
 }

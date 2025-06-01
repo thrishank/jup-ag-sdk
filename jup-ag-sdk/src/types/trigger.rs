@@ -243,13 +243,64 @@ pub struct GetTriggerOrders {
 
     /// The status of the orders to return
     /// Possible values: [active, history]
-    pub order_status: String,
+    pub order_status: OrderStatus,
 
     /// The input mint to filter by
     pub input_mint: Option<String>,
 
     /// The output mint to filter by
     pub output_mint: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum OrderStatus {
+    Active,
+    History,
+}
+
+impl GetTriggerOrders {
+    /// Creates a new request to get trigger orders for a user
+    pub fn new(user: &str, order_status: OrderStatus) -> Self {
+        Self {
+            user: user.to_string(),
+            page: None,
+            include_failed_tx: Some("false".to_string()),
+            order_status,
+            input_mint: None,
+            output_mint: None,
+        }
+    }
+
+    /// Sets the page number for pagination
+    pub fn page(mut self, page: &str) -> Self {
+        self.page = Some(page.to_string());
+        self
+    }
+
+    /// Sets whether to include failed transactions
+    pub fn include_failed_tx(mut self, include: bool) -> Self {
+        self.include_failed_tx = Some(include.to_string());
+        self
+    }
+
+    /// Sets the order status to filter by
+    pub fn order_status(mut self, status: OrderStatus) -> Self {
+        self.order_status = status;
+        self
+    }
+
+    /// Sets the input mint to filter by
+    pub fn input_mint(mut self, mint: &str) -> Self {
+        self.input_mint = Some(mint.to_string());
+        self
+    }
+
+    /// Sets the output mint to filter by
+    pub fn output_mint(mut self, mint: &str) -> Self {
+        self.output_mint = Some(mint.to_string());
+        self
+    }
 }
 
 /// orders associated to the provided user wallet address
@@ -310,5 +361,3 @@ pub struct Trade {
     #[serde(default)]
     pub product_meta: Option<serde_json::Value>, // Flexible for null or arbitrary JSON
 }
-
-// TODO:unit tests, examples
