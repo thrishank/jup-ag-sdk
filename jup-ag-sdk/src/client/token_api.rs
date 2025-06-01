@@ -1,7 +1,7 @@
 use super::JupiterClient;
 use crate::{
     error::{JupiterClientError, handle_response},
-    types::{TokenPriceRequest, TokenPriceResponse},
+    types::{NewTokens, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
 };
 
 impl JupiterClient {
@@ -52,6 +52,159 @@ impl JupiterClient {
 
         match response.json::<TokenPriceResponse>().await {
             Ok(token_price) => Ok(token_price),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns the specified mint address's token information and metadata.
+    ///
+    /// ```
+    /// let token_info = client.get_token_info("JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN").await;
+    ///
+    /// println!("Token Name: {}", token_info.name);
+    /// println!("Token Info: {:?}", token_info);
+    /// ```
+    pub async fn get_token_info(
+        &self,
+        mint_address: &str,
+    ) -> Result<TokenInfoResponse, JupiterClientError> {
+        let url = format!("{}/tokens/v1/token/{}", self.base_url, mint_address);
+        let response = match self.client.get(&url).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<TokenInfoResponse>().await {
+            Ok(token_info) => Ok(token_info),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns the mints involved in a market.
+    pub async fn get_market_mints(
+        &self,
+        market_address: &str,
+    ) -> Result<Vec<String>, JupiterClientError> {
+        let url = format!(
+            "{}/tokens/v1/market/{}/mints",
+            self.base_url, market_address
+        );
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self.client.get(&url).headers(headers).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<String>>().await {
+            Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns a list of all mints tradable via Jupiter routing.
+    /// This endpoint returns greater than 32MB amount of data. May take a while to complete.
+    pub async fn get_tradable_mints(&self) -> Result<Vec<String>, JupiterClientError> {
+        let url = format!("{}/tokens/v1/mints/tradable", self.base_url);
+        let response = match self.client.get(&url).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<String>>().await {
+            Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns a list of mints with specified tag(s) along with their metadata.
+    /// tags: verified, lst, token-2022, etc
+    /// ```
+    ///
+    /// let tags = vec![String::from("verified")];
+    /// let tagged = client
+    /// .get_mints_by_tags(&tags)
+    ///    .await
+    ///    .expect("failed to get mints by tags");
+    /// ```
+    pub async fn get_mints_by_tags(
+        &self,
+        tags: &[String],
+    ) -> Result<Vec<TokenInfoResponse>, JupiterClientError> {
+        let url = format!("{}/tokens/v1/tagged/{}", self.base_url, tags.join(","));
+        let response = match self.client.get(&url).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfoResponse>>().await {
+            Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// get new tokens with metadata, created at timestamp and markets.
+    pub async fn get_new_tokens(
+        &self,
+        limit: Option<u64>,
+        offset: Option<u64>,
+    ) -> Result<Vec<NewTokens>, JupiterClientError> {
+        let mut url = format!("{}/tokens/v1/new", self.base_url);
+        if let Some(l) = limit {
+            url.push_str(&format!("?limit={}", l));
+        }
+        if let Some(o) = offset {
+            if url.contains('?') {
+                url.push_str(&format!("&offset={}", o));
+            } else {
+                url.push_str(&format!("?offset={}", o));
+            }
+        }
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self.client.get(&url).headers(headers).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<NewTokens>>().await {
+            Ok(tokens) => Ok(tokens),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns all tokens with all metadata.
+    /// Do note that calling this endpoint's resource will return a large payload of 300+MB, which would introduce some latency in the call.
+    /// Please use carefully and intentionally, else utilize the other endpoints.
+    pub async fn get_all_tokens(&self) -> Result<Vec<TokenInfoResponse>, JupiterClientError> {
+        let url = format!("{}/tokens/v1/all", self.base_url);
+
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Accept", "application/json".parse()?);
+
+        let response = match self.client.get(&url).headers(headers).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfoResponse>>().await {
+            Ok(tokens) => Ok(tokens),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }

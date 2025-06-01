@@ -67,3 +67,35 @@ where
 {
     serializer.serialize_str(&vec.join(","))
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TokenInfoResponse {
+    pub address: String,
+    pub name: String,
+    pub symbol: String,
+    pub decimals: i32,
+    #[serde(rename = "logoURI")]
+    pub logo_uri: Option<String>,
+    pub tags: Vec<Option<String>>,
+    pub daily_volume: Option<f64>,
+    pub created_at: String,
+    pub freeze_authority: Option<String>,
+    pub mint_authority: Option<String>,
+    pub permanent_delegate: Option<String>,
+    pub minted_at: Option<String>,
+    pub extensions: HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewTokens {
+    pub mint: String,
+    pub created_at: String,
+    pub metadata_updated_at: u64,
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u32,
+    pub logo_uri: Option<String>,
+    pub known_markets: Vec<String>,
+    pub mint_authority: Option<String>,
+    pub freeze_authority: Option<String>,
+}
