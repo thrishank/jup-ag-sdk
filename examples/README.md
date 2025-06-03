@@ -2,6 +2,20 @@
 
 Practical examples demonstrating how to use the [Jupiter Aggregator Rust SDK](https://crates.io/crates/jup-ag-sdk).
 
+## Environment Setup
+
+require a .env file with your wallet’s private key to sign the transactions
+
+```bash
+cp .env.example .env
+```
+
+```
+PRIVATE_KEY=your_base58_private_key_here
+```
+
+> &#9888; Do not commit your .env or private key to git.
+
 ## Contents
 
 ### 1. [`swap.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/swap.rs)
@@ -35,20 +49,16 @@ This example demonstrates how to:
 - Fetch token balances for a given wallet address.
 - Query current token prices in USDC and in other tokens (e.g., SOL).
 - Check token warnings using Jupiter’s shield API
+- check token_api.rs docs for more token-related functions.
 
-## Environment Setup
+### 4. [`trigger.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/trigger.rs)
 
-require a .env file with your wallet’s private key to sign the transactions
+This example demonstrates how to:
 
-```bash
-cp .env.example .env
-```
-
-```
-PRIVATE_KEY=your_base58_private_key_here
-```
-
-> &#9888; Do not commit your .env or private key to git.
+- create a trigger order using the Trigger API.
+- sign the transaction and execute the trigger order
+- cancel a trigger order
+- get a user trigger order history
 
 ## Learn More
 

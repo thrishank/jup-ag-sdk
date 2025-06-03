@@ -4,8 +4,7 @@ use crate::{
     types::{NewTokens, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
 };
 
-// TODO: add readme features and a simple ultra api example code
-// docs and examples for reccuring
+// TODO: docs and examples for reccuring
 
 impl JupiterClient {
     /// Returns prices of specified tokens.
