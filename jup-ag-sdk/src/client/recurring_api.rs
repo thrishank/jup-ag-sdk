@@ -16,14 +16,9 @@ impl JupiterClient {
         &self,
         data: &CreateRecurringOrderRequest,
     ) -> Result<RecurringResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/recurring/v1/createOrder", self.base_url))
-            .headers(headers)
             .json(data)
             .send()
             .await
@@ -45,14 +40,9 @@ impl JupiterClient {
         &self,
         data: &CancelRecurringOrderRequest,
     ) -> Result<RecurringResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/recurring/v1/cancelOrder", self.base_url))
-            .headers(headers)
             .json(data)
             .send()
             .await
@@ -74,14 +64,9 @@ impl JupiterClient {
         &self,
         data: &PriceDeposit,
     ) -> Result<RecurringResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/recurring/v1/priceDeposit", self.base_url))
-            .headers(headers)
             .json(data)
             .send()
             .await
@@ -103,14 +88,9 @@ impl JupiterClient {
         &self,
         data: &PriceWithdraw,
     ) -> Result<RecurringResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/recurring/v1/priceWithdraw", self.base_url))
-            .headers(headers)
             .json(data)
             .send()
             .await
@@ -132,14 +112,9 @@ impl JupiterClient {
         &self,
         data: &ExecuteRecurringRequest,
     ) -> Result<ExecuteRecurringResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/recurring/v1/execute", self.base_url))
-            .headers(headers)
             .json(data)
             .send()
             .await
@@ -161,13 +136,9 @@ impl JupiterClient {
         &self,
         data: &GetRecurringOrders,
     ) -> Result<RecurringOrders, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/recurring/v1/getRecurringOrders", self.base_url))
-            .headers(headers)
             .query(&data)
             .send()
             .await

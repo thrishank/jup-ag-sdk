@@ -34,13 +34,9 @@ impl JupiterClient {
         &self,
         params: &UltraOrderRequest,
     ) -> Result<UltraOrderResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/ultra/v1/order", self.base_url))
-            .headers(headers)
             .query(&params)
             .send()
             .await
@@ -82,14 +78,9 @@ impl JupiterClient {
         &self,
         data: &UltraExecuteOrderRequest,
     ) -> Result<UltraExecuteOrderResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/ultra/v1/execute", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await
@@ -132,13 +123,9 @@ impl JupiterClient {
         &self,
         address: &str,
     ) -> Result<TokenBalancesResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/ultra/v1/balances/{}", self.base_url, address))
-            .headers(headers)
             .send()
             .await
         {
@@ -182,15 +169,11 @@ impl JupiterClient {
     /// println!("{:#?}", shield_info);
     /// ```
     pub async fn shield(&self, mints: &[String]) -> Result<Shield, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let query_params = vec![("mints", mints.join(","))];
 
         let response = match self
             .client
             .get(format!("{}/ultra/v1/shield", self.base_url))
-            .headers(headers)
             .query(&query_params)
             .send()
             .await
@@ -209,13 +192,9 @@ impl JupiterClient {
 
     /// Request for the list of routers available in the routing engine of Ultra, which is Juno
     pub async fn routers(&self) -> Result<Vec<Router>, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/ultra/v1/order/routers", self.base_url))
-            .headers(headers)
             .send()
             .await
         {

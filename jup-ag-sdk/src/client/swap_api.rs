@@ -33,13 +33,9 @@ impl JupiterClient {
         &self,
         params: &QuoteRequest,
     ) -> Result<QuoteResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/swap/v1/quote", &self.base_url))
-            .headers(headers)
             .query(&params)
             .send()
             .await
@@ -73,14 +69,9 @@ impl JupiterClient {
         &self,
         data: &SwapRequest,
     ) -> Result<SwapResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/swap/v1/swap", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await
@@ -114,13 +105,9 @@ impl JupiterClient {
         &self,
         data: &SwapRequest,
     ) -> Result<SwapInstructions, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/swap/v1/swap-instructions", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await

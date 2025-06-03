@@ -44,14 +44,9 @@ impl JupiterClient {
         &self,
         data: &CreateTriggerOrder,
     ) -> Result<TriggerResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/trigger/v1/createOrder", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await
@@ -95,14 +90,9 @@ impl JupiterClient {
         &self,
         data: &ExecuteTriggerOrder,
     ) -> Result<TriggerResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/trigger/v1/execute", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await
@@ -147,14 +137,9 @@ impl JupiterClient {
         &self,
         data: &CancelTriggerOrder,
     ) -> Result<TriggerResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/trigger/v1/cancelOrder", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await
@@ -203,14 +188,9 @@ impl JupiterClient {
         &self,
         data: &CancelTriggerOrders,
     ) -> Result<TriggerResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Content-Type", "application/json".parse()?);
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .post(format!("{}/trigger/v1/cancelOrders", self.base_url))
-            .headers(headers)
             .json(&data)
             .send()
             .await
@@ -231,13 +211,9 @@ impl JupiterClient {
         &self,
         data: &GetTriggerOrders,
     ) -> Result<OrderResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/trigger/v1/getTriggerOrders", self.base_url))
-            .headers(headers)
             .query(&data)
             .send()
             .await

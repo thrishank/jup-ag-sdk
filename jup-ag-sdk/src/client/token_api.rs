@@ -35,13 +35,9 @@ impl JupiterClient {
         &self,
         params: &TokenPriceRequest,
     ) -> Result<TokenPriceResponse, JupiterClientError> {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
         let response = match self
             .client
             .get(format!("{}/price/v2", self.base_url))
-            .headers(headers)
             .query(&params)
             .send()
             .await
@@ -93,11 +89,7 @@ impl JupiterClient {
             "{}/tokens/v1/market/{}/mints",
             self.base_url, market_address
         );
-
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
-        let response = match self.client.get(&url).headers(headers).send().await {
+        let response = match self.client.get(&url).send().await {
             Ok(resp) => resp,
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
@@ -172,11 +164,7 @@ impl JupiterClient {
                 url.push_str(&format!("?offset={}", o));
             }
         }
-
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
-        let response = match self.client.get(&url).headers(headers).send().await {
+        let response = match self.client.get(&url).send().await {
             Ok(resp) => resp,
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
@@ -195,10 +183,7 @@ impl JupiterClient {
     pub async fn get_all_tokens(&self) -> Result<Vec<TokenInfoResponse>, JupiterClientError> {
         let url = format!("{}/tokens/v1/all", self.base_url);
 
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("Accept", "application/json".parse()?);
-
-        let response = match self.client.get(&url).headers(headers).send().await {
+        let response = match self.client.get(&url).send().await {
             Ok(resp) => resp,
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
