@@ -2,7 +2,7 @@
 mod token_tests {
     use jup_ag_sdk::types::TokenPriceRequest;
 
-    use crate::common::{SOL_MINT, USDC_MINT, create_test_client};
+    use crate::common::{JUP_MINT, SOL_MINT, USDC_MINT, create_test_client};
 
     #[tokio::test]
     async fn test_get_token_balances() {
@@ -59,5 +59,46 @@ mod token_tests {
             res.data.get(SOL_MINT).expect("sol price not found").price,
             "1"
         );
+    }
+
+    #[tokio::test]
+    pub async fn test_token_info() {
+        let client = create_test_client();
+
+        let info = client
+            .get_token_info(JUP_MINT)
+            .await
+            .expect("failed to get token info");
+
+        assert_eq!(info.decimals, 6, "JUP decimals should be 6");
+
+        assert_eq!(info.symbol, "JUP")
+    }
+
+    #[tokio::test]
+    pub async fn test_get_market_mints() {
+        let client = create_test_client();
+
+        let mints = client
+            .get_market_mints("5rCf1DM8LjKTw4YqhnoLcngyZYeNnQqztScTogYHAS6")
+            .await
+            .expect("failed to get market mints");
+
+        assert_eq!(mints[0], SOL_MINT, "First mint should be SOL");
+        assert_eq!(mints[1], USDC_MINT, "Second mint should be USDC");
+    }
+
+    #[tokio::test]
+    pub async fn test_get_mints_by_tags() {
+        let client = create_test_client();
+
+        let tags = vec![String::from("lst")];
+
+        let mints = client
+            .get_mints_by_tags(&tags)
+            .await
+            .expect("failed to get mints by tags");
+
+        assert!(mints.len() > 1000, "there are more that 1000 lst");
     }
 }

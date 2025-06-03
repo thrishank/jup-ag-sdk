@@ -4,8 +4,7 @@ use crate::{
     types::{NewTokens, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
 };
 
-// TODO: add tests for the methods in this file
-// add readme features and a simple ultra api example code
+// TODO: add readme features and a simple ultra api example code
 // docs and examples for reccuring
 
 impl JupiterClient {
