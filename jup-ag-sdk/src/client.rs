@@ -32,6 +32,7 @@ impl JupiterClient {
 }
 
 // Include all the API method implementations
+mod recurring_api;
 mod swap_api;
 mod token_api;
 mod trigger_api;

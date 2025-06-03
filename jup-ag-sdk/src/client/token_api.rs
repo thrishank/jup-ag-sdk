@@ -4,6 +4,10 @@ use crate::{
     types::{NewTokens, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
 };
 
+// TODO: add tests for the methods in this file
+// add readme features and a simple ultra api example code
+// docs and examples for reccuring
+
 impl JupiterClient {
     /// Returns prices of specified tokens.
     /// ```
@@ -14,7 +18,7 @@ impl JupiterClient {
     ///     "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN".to_string(),
     ///  ];
     /// let params = TokenPriceRequest::new(&token_mints)
-    ///     .with_vs_token("So11111111111111111111111111111111111111112"); // default is USDC
+    ///     .with_vs_token("So11111111111111111111111111111111111111112"); // default is USD
     ///
     /// let price = client.get_token_price(&params).await
     ///     .expect("Failed to get token price");

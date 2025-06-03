@@ -102,3 +102,16 @@ pub async fn token_info() {
 
     println!("random_shitter warnings: {:?}", random_shitter);
 }
+
+pub async fn get_tokens_from_tags() {
+    let tags = vec![String::from("lst")];
+
+    let client = JupiterClient::new("https:://lite-api.jup.ag");
+
+    let mints = client
+        .get_mints_by_tags(&tags)
+        .await
+        .expect("failed to get mint");
+
+    println!("mints: {}", mints.len())
+}

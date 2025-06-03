@@ -22,7 +22,7 @@ async fn trigger() {
         "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
         "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j",
         "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j",
-        10_000_000,
+        10_000_000, // swap 10 USDC for 20 JUP
         20_000_000,
     );
 
@@ -32,7 +32,7 @@ async fn trigger() {
         .await
         .expect("Failed to create trigger order");
 
-    println!("Trigger Order: {:?}", create_order);
+    println!("Create Trigger Order: {:?}", create_order);
 
     // Load .env variables into std::env
     dotenv().ok();
@@ -40,6 +40,7 @@ async fn trigger() {
     // Read the variable
     let key = env::var("PRIVATE_KEY").expect("PRIVATE_KEY not set in .env");
 
+    // if you have the private key in base58 format. Else skip this decode
     let key_bytes = bs58::decode(key)
         .into_vec()
         .expect("Failed to decode base58 private key");
@@ -53,19 +54,19 @@ async fn trigger() {
     let mut tx: VersionedTransaction = deserialize(&swap_tx_bytes).unwrap();
     let message = tx.message.serialize();
 
+    // sign the transaction with the keypair
     let signature = keypair.sign_message(&message);
 
     if tx.signatures.is_empty() {
-        // If no signatures array exists (unlikely with Jupiter)
         tx.signatures.push(signature);
     } else {
-        // Replace the first signature (fee payer)
         tx.signatures[0] = signature;
     };
 
     let signed_tx_bytes = serialize(&tx).unwrap();
     let base64_signed_tx = STANDARD.encode(&signed_tx_bytes);
 
+    // here we execute the trigger order. Instead this you can directly send the transaction using a rpc
     let exe = ExecuteTriggerOrder {
         request_id: create_order.request_id,
         signed_transaction: base64_signed_tx,
@@ -78,6 +79,7 @@ async fn trigger() {
 
     println!("Execute Trigger Order: {:?}", execute);
 
+    // get trigger orders for user address
     let params = GetTriggerOrders {
         user: "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j".to_string(),
         order_status: OrderStatus::History,
@@ -94,6 +96,7 @@ async fn trigger() {
 
     println!("Trigger Orders: {:?}", orders);
 
+    // cance a trigger order
     // let cancel = CancelTriggerOrder::new(
     //     "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j",
     //     "HeyWQcYd9t6BFGDfwh3w13F9KmiSNyPJuRPm49kiynFs",
