@@ -11,7 +11,9 @@ use crate::{
 use super::JupiterClient;
 
 impl JupiterClient {
-    /// Request for a base64-encoded unsigned recurring order creation transaction
+    /// Sends a request to create a new recurring order.
+    ///
+    /// Returns a base64-encoded unsigned transaction to be signed and a request _id.
     pub async fn create_recurring_order(
         &self,
         data: &CreateRecurringOrderRequest,

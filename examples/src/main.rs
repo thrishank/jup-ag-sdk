@@ -1,3 +1,4 @@
+mod recurring;
 mod swap;
 mod token;
 mod trigger;
