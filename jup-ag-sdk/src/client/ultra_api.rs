@@ -47,9 +47,20 @@ impl JupiterClient {
 
         let response = handle_response(response).await?;
 
-        match response.json::<UltraOrderResponse>().await {
+        // CODE to debug the deseraliztion error
+        let text = response.text().await.map_err(|e| {
+            JupiterClientError::DeserializationError(format!("Failed to read response text: {}", e))
+        })?;
+
+        // DEBUG: print raw JSON string
+        println!("Raw response body: {}", text);
+
+        match serde_json::from_str::<UltraOrderResponse>(&text) {
             Ok(ultra_order_response) => Ok(ultra_order_response),
-            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+            Err(e) => {
+                eprintln!("Deserialization error: {}", e);
+                Err(JupiterClientError::DeserializationError(e.to_string()))
+            }
         }
     }
 
