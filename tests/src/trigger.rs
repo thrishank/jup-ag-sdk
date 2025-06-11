@@ -49,7 +49,7 @@ mod ultra_tests {
             1_000_000_000,
             200_000_000,
         )
-        .expired_at("1748622171");
+        .expired_at("1848622171");
 
         let create_order = client
             .create_trigger_order(&params)
