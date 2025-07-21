@@ -1,3 +1,7 @@
+Archived 
+Refer this 
+https://github.com/Jupiter-DevRel/jup-rust-sdk
+
 # Jup-Ag-SDK
 
 > 🚀 A Rust SDK to interact with the [Jupiter Aggregator](https://jup.ag) APIs.  
