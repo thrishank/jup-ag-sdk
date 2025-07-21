@@ -1,5 +1,4 @@
-Archived 
-Refer this 
+ 
 https://github.com/Jupiter-DevRel/jup-rust-sdk
 
 # Jup-Ag-SDK
